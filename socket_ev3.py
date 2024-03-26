@@ -9,7 +9,7 @@ motor_right = LargeMotor('outB')
 
 # EV3 IP address and port
 ev3_ip = "10.42.0.66"  # Replace with your EV3's IP address
-ev3_port = 8888  # Choose the same port number used on the Raspberry Pi
+ev3_port = 8888  # Choose the same port number used on the Jetson
 
 # Create a socket object
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,10 +24,10 @@ print("Waiting for connection...")
 try:
     # Accept the connection
     client_socket, client_address = server_socket.accept()
-    print("Connected to Raspberry Pi")
+    print("Connected to Jetson Nano")
     
     while True:
-        # Receive data from the Raspberry Pi
+        # Receive data from the Jetson
         data = client_socket.recv(1024).decode()
 
         # Process the received data
@@ -37,19 +37,19 @@ try:
             if data == 'w':
                 # Start motors
                 # Add code here to start the motors
-                print("Motors started")
+                print("Moving forward")
                 motor_left.on(50)
                 motor_right.on(50)
             elif data == 's':
                 # Stop motors
                 # Add code here to stop the motors
-                print("Motors stopped")
+                print("Moving backward")
                 motor_left.on(-50)
                 motor_right.on(-50)
             elif data == 'a':
                 # Stop motors
                 # Add code here to stop the motors
-                print("Motors stopped")
+                print("Turn left")
                 motor_left.on(-50)
                 motor_right.on(50)
             elif data == 'd':
@@ -76,6 +76,9 @@ try:
 
         # Break the loop if the received data is 'q' (quit)
         if data == 'q':
+            # Motors stopped without brake engaged (motors can turn freely)
+            motor_left.stop(stop_action="coast")
+            motor_right.stop(stop_action="coast")
             break
 
 except Exception as e:
